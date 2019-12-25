@@ -1,54 +1,6 @@
-import React, { useReducer } from "react";
-import crypto from "crypto-js";
-
-const lsGet = (name: string) => localStorage.getItem(name) ?? "";
-
-const lsSet = (data: string) => localStorage.setItem("data", data);
-
-type State = {
-  data: object;
-  encryptedData: string;
-  key: string;
-  site: string;
-  identifier: string;
-  password: string;
-};
-
-const encrypt = (data: object, key: string) => {
-  return crypto.AES.encrypt(JSON.stringify(data), key).toString();
-};
-
-const decrypt = (data: string, key: string) => {
-  return crypto.AES.decrypt(data, key).toString(crypto.enc.Utf8);
-};
-
-const init = () => {
-  console.log("test");
-  let lsData = lsGet("data");
-  let key = prompt("Enter master password");
-  let data: State = {
-    data: {
-      "gmail.com": ["email", "pw"],
-      facebook: ["email", "pw"]
-    },
-    encryptedData: encrypt(
-      {
-        "gmail.com": ["email", "pw"],
-        facebook: ["email", "pw"]
-      },
-      "test"
-    ),
-    key: key!,
-    site: "",
-    identifier: "",
-    password: ""
-  };
-  if (lsData) {
-    data = JSON.parse(decrypt(lsData, key!));
-  }
-
-  return data;
-};
+import React, { useReducer, useEffect } from "react";
+import { State } from "./AppTypes";
+import { lsGet, lsSet, encrypt, decrypt, download } from "./helpers";
 
 const reducer = (state: State, action: any) => {
   switch (action.type) {
@@ -59,15 +11,42 @@ const reducer = (state: State, action: any) => {
       };
     }
     case "create": {
-      let newState = {
-        ...state,
-        data: {
-          ...state.data,
-          [state.site]: [state.identifier, state.password]
-        }
+      let newData = {
+        ...state.data,
+        [state.site]: [state.identifier, state.password]
       };
-      lsSet(encrypt(newState, state.key));
-      return newState;
+      let encryptedData = encrypt(newData, state.key);
+      lsSet(encryptedData);
+      return {
+        ...state,
+        data: newData
+      };
+    }
+    case "import": {
+      let key = prompt("Enter master password");
+      let data = decrypt(action.encryptedData, key!);
+      return {
+        ...state,
+        encryptedData: "",
+        data,
+        key,
+        hidden: false
+      };
+    }
+    case "init": {
+      let key = prompt("Enter master password") ?? "";
+      let encryptedData = encrypt(state.data, key);
+      lsSet(encryptedData);
+      return {
+        ...state,
+        key,
+        hidden: false
+      };
+    }
+    case "export": {
+      let encryptedData = encrypt(state.data, state.key);
+      download(encryptedData);
+      return state;
     }
     default: {
       return state;
@@ -75,65 +54,131 @@ const reducer = (state: State, action: any) => {
   }
 };
 
-export const App: React.FC = () => {
-  const [state, dispatch] = useReducer(reducer, undefined, init);
+const initialState = {
+  data: {},
+  key: "",
+  encryptedData: "",
+  site: "",
+  identifier: "",
+  password: "",
+  hidden: true
+};
 
-  const { data } = state;
+export const App: React.FC = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { data, encryptedData, site, identifier, password, hidden } = state;
+
+  useEffect(() => console.log(state), [state]);
+  useEffect(() => {
+    let encryptedData = lsGet();
+    if (encryptedData) dispatch({ type: "import", encryptedData });
+  }, []);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateRows: "1fr",
-        justifyItems: "center",
-        alignItems: "center"
-      }}
-    >
-      <div>
-        <button>Import</button>
-        <button>Export</button>
-      </div>
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          dispatch({ type: "create" });
+    <>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateRows: "1fr",
+          justifyItems: "center",
+          alignItems: "center"
         }}
       >
-        <input
-          placeholder="site"
-          onChange={e =>
-            dispatch({ type: "field", name: "site", value: e.target.value })
-          }
-        ></input>
-        <input
-          placeholder="identifier"
-          onChange={e =>
-            dispatch({
-              type: "field",
-              name: "identifier",
-              value: e.target.value
-            })
-          }
-        ></input>
-        <input
-          placeholder="password"
-          onChange={e =>
-            dispatch({ type: "field", name: "password", value: e.target.value })
-          }
-        ></input>
-        <button type="submit">Create</button>
-      </form>
-      <div>
-        {!data
-          ? "loading"
-          : Object.entries(data).map(e => (
-              <div key={String(Math.random())}>
-                <div>{e[0]}</div>
-                <div>{e[1][0]}</div>
-                <div>{e[1][1]}</div>
-              </div>
-            ))}
+        <div>
+          <input
+            value={encryptedData}
+            placeholder="data string"
+            onChange={e =>
+              dispatch({
+                type: "field",
+                name: "encryptedData",
+                value: e.target.value
+              })
+            }
+          />
+          <button
+            onClick={() => {
+              dispatch({ type: "import", encryptedData });
+            }}
+          >
+            Import
+          </button>
+          <button
+            className={hidden ? "dn" : undefined}
+            onClick={() => {
+              dispatch({ type: "export" });
+            }}
+          >
+            Export
+          </button>
+        </div>
+        <button
+          className={!hidden ? "dn" : undefined}
+          onClick={() => {
+            dispatch({ type: "init" });
+          }}
+        >
+          Create database
+        </button>
       </div>
-    </div>
+      <div
+        style={{
+          display: hidden ? "none" : "grid",
+          gridTemplateRows: "1fr",
+          justifyItems: "center",
+          alignItems: "center"
+        }}
+      >
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            dispatch({ type: "create" });
+          }}
+        >
+          <input
+            value={site}
+            placeholder="site"
+            onChange={e =>
+              dispatch({ type: "field", name: "site", value: e.target.value })
+            }
+          />
+          <input
+            value={identifier}
+            placeholder="identifier"
+            onChange={e =>
+              dispatch({
+                type: "field",
+                name: "identifier",
+                value: e.target.value
+              })
+            }
+          />
+          <input
+            value={password}
+            placeholder="password"
+            onChange={e =>
+              dispatch({
+                type: "field",
+                name: "password",
+                value: e.target.value
+              })
+            }
+          />
+          <button type="submit">Add item</button>
+        </form>
+        <div>
+          {!data
+            ? "No data available"
+            : Object.entries(data).map(e => (
+                <div key={String(Math.random())}>
+                  <div>{e[0]}</div>
+                  <div>{e[1][0]}</div>
+                  <div>{e[1][1]}</div>
+                </div>
+              ))}
+        </div>
+      </div>
+    </>
   );
 };
