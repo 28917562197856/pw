@@ -1,19 +1,24 @@
 import crypto from "crypto-js";
 
-const lsGet = () => localStorage.getItem("data");
+function lsGet() {
+  return localStorage.getItem("data");
+}
 
-const lsSet = (data: string) => localStorage.setItem("data", data);
+function lsSet(data: string) {
+  localStorage.setItem("data", data);
+}
 
-const HMAC = (encrypted: string, key: string) =>
-  crypto.HmacSHA256(encrypted, crypto.SHA256(key)).toString();
+function HMAC(encrypted: string, key: string) {
+  return crypto.HmacSHA256(encrypted, crypto.SHA256(key)).toString();
+}
 
-const encrypt = (data: object, key: string) => {
+function encrypt(data: object, key: string) {
   let encrypted = crypto.AES.encrypt(JSON.stringify(data), key).toString();
   let hmac = HMAC(encrypted, key);
   return hmac + encrypted;
-};
+}
 
-const decrypt = (data: string, key: string): object | null => {
+function decrypt(data: string, key: string): object | null {
   let hmac = data.substring(0, 64);
   let encrypted = data.substring(64);
   let decryptedHmac = HMAC(encrypted, key);
@@ -23,9 +28,9 @@ const decrypt = (data: string, key: string): object | null => {
     );
     return JSON.parse(decrypted);
   } else return null;
-};
+}
 
-const download = (text: string) => {
+function download(text: string) {
   let element = document.createElement("a");
   element.setAttribute(
     "href",
@@ -39,6 +44,20 @@ const download = (text: string) => {
   element.click();
 
   document.body.removeChild(element);
-};
+}
 
-export { lsGet, lsSet, encrypt, decrypt, download };
+function range(from: number, to: number) {
+  return [...Array(to - from + 1).keys()].map(x => x + from);
+}
+
+function generatePassword(length: number, numbers: boolean, symbols: boolean) {
+  let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  if (numbers) chars += "0123456789";
+  if (symbols) chars += "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+
+  return range(0, length - 1)
+    .map(_ => chars[(Math.random() * chars.length) << 0])
+    .join("");
+}
+
+export { lsGet, lsSet, encrypt, decrypt, download, generatePassword };
