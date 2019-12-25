@@ -1,11 +1,11 @@
 import React, { useReducer, useEffect } from "react";
-import { State } from "./AppTypes";
+import { State, Action } from "./AppTypes";
 import { lsGet, lsSet, encrypt, decrypt, download } from "./helpers";
 import { AddItem } from "./components/AddItem";
 import { ImportExportInit } from "./components/ImportExportInit";
 import { GeneratePassword } from "./components/GeneratePassword";
 
-function reducer(state: State, action: any) {
+function reducer(state: State, action: Action) {
   switch (action.type) {
     case "field": {
       return {
@@ -22,19 +22,27 @@ function reducer(state: State, action: any) {
       lsSet(encryptedData);
       return {
         ...state,
-        data: newData
+        data: newData,
+        site: "",
+        identifier: "",
+        password: ""
       };
     }
     case "import": {
-      let key = prompt("Enter master password");
-      let data = decrypt(action.encryptedData, key!);
-      return {
-        ...state,
-        encryptedData: "",
-        data,
-        key,
-        hidden: false
-      };
+      let key = prompt("Enter master password") ?? "";
+      let data = decrypt(action.encryptedData, key);
+      if (!data) {
+        alert("Invalid password!");
+        return { ...state, encryptedData: action.encryptedData };
+      } else {
+        return {
+          ...state,
+          data,
+          encryptedData: "",
+          key,
+          hidden: false
+        };
+      }
     }
     case "init": {
       let key = prompt("Enter master password") ?? "";
@@ -113,10 +121,31 @@ export const App: React.FC = () => {
           {!data
             ? "No data available"
             : Object.entries(data).map(e => (
-                <div key={String(Math.random())}>
-                  <div>{e[0]}</div>
-                  <div>{e[1][0]}</div>
-                  <div>{e[1][1]}</div>
+                <div className="flex" key={String(Math.random())}>
+                  <div
+                    className="pointer"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(e[0]);
+                    }}
+                  >
+                    {e[0]}
+                  </div>
+                  <div
+                    className="mh1 pointer"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(e[1][0]);
+                    }}
+                  >
+                    {e[1][0]}
+                  </div>
+                  <div
+                    className="pointer"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(e[1][1]);
+                    }}
+                  >
+                    {e[1][1]}
+                  </div>
                 </div>
               ))}
         </div>

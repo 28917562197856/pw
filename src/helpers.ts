@@ -46,16 +46,11 @@ function download(text: string) {
   document.body.removeChild(element);
 }
 
-function range(from: number, to: number) {
-  return [...Array(to - from + 1).keys()].map(x => x + from);
-}
-
-function generatePassword(length: number, numbers: boolean, symbols: boolean) {
-  let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  if (numbers) chars += "0123456789";
+function generatePassword(length: number, symbols: boolean) {
+  let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   if (symbols) chars += "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
-  return range(0, length - 1)
+  return [...Array(length).keys()]
     .map(_ => chars[(Math.random() * chars.length) << 0])
     .join("");
 }

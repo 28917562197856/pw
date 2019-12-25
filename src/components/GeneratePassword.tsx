@@ -6,25 +6,25 @@ type Props = {
 };
 
 export const GeneratePassword: React.FC<Props> = ({ dispatch }) => {
-  const [numbers, setNumbers] = useState(false);
   const [symbols, setSymbols] = useState(false);
   const [length, setLength] = useState(64);
 
   return (
     <form>
-      <span>numbers?</span>
-      <input type="checkbox" onChange={() => setNumbers(!numbers)} />
-      <span>symbols?</span>
+      <span>Symbols?</span>
       <input type="checkbox" onChange={() => setSymbols(!symbols)} />
       <input
+        min={5}
+        max={256}
         value={length}
-        type="number"
+        type="range"
         onChange={e => setLength(parseInt(e.target.value))}
       />
+      {length}
       <button
         onClick={e => {
           e.preventDefault();
-          let pw = generatePassword(length, numbers, symbols);
+          let pw = generatePassword(length, symbols);
           dispatch({
             type: "field",
             name: "password",

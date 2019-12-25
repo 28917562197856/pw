@@ -7,3 +7,10 @@ export type State = {
   password: string;
   hidden: boolean;
 };
+
+export type Action =
+  | { type: "field"; name: string; value: string }
+  | { type: "create" }
+  | { type: "import"; encryptedData: string }
+  | { type: "init" }
+  | { type: "export" };
