@@ -1,9 +1,10 @@
 import React, { useReducer, useEffect } from "react";
 import { State, Action } from "./AppTypes";
-import { lsGet, lsSet, encrypt, decrypt, download } from "./helpers";
+import { lsSet, encrypt, decrypt, download } from "./helpers";
 import { AddItem } from "./components/AddItem";
-import { ImportExportInit } from "./components/ImportExportInit";
 import { GeneratePassword } from "./components/GeneratePassword";
+import { DataDisplay } from "./components/DataDisplay";
+import { RouteComponentProps, Link } from "react-router-dom";
 
 function reducer(state: State, action: Action) {
   switch (action.type) {
@@ -29,20 +30,15 @@ function reducer(state: State, action: Action) {
       };
     }
     case "import": {
-      let key = prompt("Enter master password") ?? "";
-      let data = decrypt(action.encryptedData, key);
-      if (!data) {
-        alert("Invalid password!");
-        return { ...state, encryptedData: action.encryptedData };
-      } else {
-        return {
-          ...state,
-          data,
-          encryptedData: "",
-          key,
-          hidden: false
-        };
-      }
+      let key = action.key;
+      let data = decrypt(action.encryptedData, key ?? "");
+      return {
+        ...state,
+        data,
+        encryptedData: "",
+        key,
+        hidden: false
+      };
     }
     case "init": {
       let key = prompt("Enter master password") ?? "";
@@ -68,88 +64,49 @@ function reducer(state: State, action: Action) {
 const initialState = {
   data: {},
   key: "",
-  encryptedData: "",
   site: "",
   identifier: "",
-  password: "",
-  hidden: true
+  password: ""
 };
 
-export const App: React.FC = () => {
+export const App: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { data, encryptedData, site, identifier, password, hidden } = state;
+  const { data, site, identifier, password } = state;
 
   useEffect(() => console.log(state), [state]);
   useEffect(() => {
-    let encryptedData = lsGet();
-    if (encryptedData) dispatch({ type: "import", encryptedData });
+    if (location.state === undefined) {
+      history.push("/");
+    } else
+      dispatch({
+        type: "import",
+        encryptedData: location.state.encryptedData,
+        key: location.state.key
+      });
   }, []);
 
   return (
-    <>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateRows: "1fr",
-          justifyItems: "center",
-          alignItems: "center"
-        }}
-      >
-        <ImportExportInit
-          dispatch={dispatch}
-          encryptedData={encryptedData}
-          hidden={hidden}
-        />
-      </div>
-      <div
-        style={{
-          display: hidden ? "none" : "grid",
-          gridTemplateRows: "1fr",
-          justifyItems: "center",
-          alignItems: "center"
-        }}
-      >
-        <GeneratePassword dispatch={dispatch} />
-        <AddItem
-          dispatch={dispatch}
-          site={site}
-          identifier={identifier}
-          password={password}
-        />
-        <div>
-          {!data
-            ? "No data available"
-            : Object.entries(data).map(e => (
-                <div className="flex" key={String(Math.random())}>
-                  <div
-                    className="pointer"
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(e[0]);
-                    }}
-                  >
-                    {e[0]}
-                  </div>
-                  <div
-                    className="mh1 pointer"
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(e[1][0]);
-                    }}
-                  >
-                    {e[1][0]}
-                  </div>
-                  <div
-                    className="pointer"
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(e[1][1]);
-                    }}
-                  >
-                    {e[1][1]}
-                  </div>
-                </div>
-              ))}
-        </div>
-      </div>
-    </>
+    <div style={styles.container}>
+      <Link to="/">Import</Link>
+      <GeneratePassword dispatch={dispatch} />
+      <AddItem
+        dispatch={dispatch}
+        site={site}
+        identifier={identifier}
+        password={password}
+      />
+      <div>{!data ? "No data available" : <DataDisplay data={data} />}</div>
+    </div>
   );
+};
+
+const styles = {
+  container: {
+    fontFamily: "'Roboto', sans-serif",
+    display: "grid",
+    gridTemplateRows: "1fr",
+    justifyItems: "center",
+    alignItems: "center"
+  }
 };

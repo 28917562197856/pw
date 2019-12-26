@@ -10,7 +10,7 @@ export const GeneratePassword: React.FC<Props> = ({ dispatch }) => {
   const [length, setLength] = useState(64);
 
   return (
-    <form>
+    <div>
       <span>Symbols?</span>
       <input type="checkbox" onChange={() => setSymbols(!symbols)} />
       <input
@@ -34,6 +34,6 @@ export const GeneratePassword: React.FC<Props> = ({ dispatch }) => {
       >
         Generate password
       </button>
-    </form>
+    </div>
   );
 };
