@@ -16,10 +16,13 @@ export const DataDisplay: React.FC<Props> = ({ data }) => {
       </thead>
       <tbody>
         {Object.entries(data).map(e => (
-          <tr key={String(Math.random())}>
+          <tr key={e[0]}>
             <CopiableTd text={e[0]} className="" />
             <CopiableTd text={e[1][0]} className="mh1" />
             <CopiableTd text={e[1][1]} className="" />
+            <td>
+              <button>Delete</button>
+            </td>
           </tr>
         ))}
       </tbody>

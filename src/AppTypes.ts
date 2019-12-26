@@ -9,6 +9,6 @@ export type State = {
 export type Action =
   | { type: "field"; name: string; value: string }
   | { type: "create" }
-  | { type: "import"; encryptedData: string; key: string }
+  | { type: "import"; data: object | null; key: string }
   | { type: "init" }
   | { type: "export" };

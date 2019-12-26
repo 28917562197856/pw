@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { decrypt } from "../helpers";
 
 type Props = {
   encryptedData: string | null;
@@ -23,13 +24,26 @@ export const Import: React.FC<Props & RouteComponentProps> = ({
       <input value={key} onChange={e => setKey(e.target.value)} />
       <button
         onClick={() => {
-          if (data === "" || key === "") alert("Field must be nonempty!");
-          else {
+          if (!data && key) {
+            let choice = confirm(
+              `Create new database with master password ${key}?`
+            );
+            if (choice) {
+              history.push({
+                pathname: "show",
+                state: { key }
+              });
+            }
+          } else if (!decrypt(data, key)) {
+            alert("Invalid password!");
+          } else {
             setData("");
             setKey("");
+            let decryptedData = decrypt(data, key);
+            console.log(decryptedData);
             history.push({
               pathname: "/show",
-              state: { encryptedData: data, key }
+              state: { data: decryptedData, key }
             });
           }
         }}

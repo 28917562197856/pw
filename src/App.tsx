@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect } from "react";
 import { State, Action } from "./AppTypes";
-import { lsSet, encrypt, decrypt, download } from "./helpers";
+import { lsSet, encrypt, download } from "./helpers";
 import { AddItem } from "./components/AddItem";
 import { GeneratePassword } from "./components/GeneratePassword";
 import { DataDisplay } from "./components/DataDisplay";
@@ -31,21 +31,11 @@ function reducer(state: State, action: Action) {
     }
     case "import": {
       let key = action.key;
-      let data = decrypt(action.encryptedData, key ?? "");
+
+      let data = action.data;
       return {
         ...state,
         data,
-        encryptedData: "",
-        key,
-        hidden: false
-      };
-    }
-    case "init": {
-      let key = prompt("Enter master password") ?? "";
-      let encryptedData = encrypt(state.data, key);
-      lsSet(encryptedData);
-      return {
-        ...state,
         key,
         hidden: false
       };
@@ -81,7 +71,7 @@ export const App: React.FC<RouteComponentProps> = ({ location, history }) => {
     } else
       dispatch({
         type: "import",
-        encryptedData: location.state.encryptedData,
+        data: location.state.data ?? null,
         key: location.state.key
       });
   }, []);
