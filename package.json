@@ -20,6 +20,7 @@
   },
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "parcel build src/index.html -d dist --no-source-maps"
+    "build": "rm -rf dist && parcel build src/index.html --no-source-maps --public-url /pw",
+    "deploy": "gh-pages -d dist"
   }
 }

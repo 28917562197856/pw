@@ -43,7 +43,7 @@ type PropsCopiableDiv = {
 const CopiableTd: React.FC<PropsCopiableDiv> = ({ text }) => {
   return (
     <td
-      className="pointer dim pa2 ba mw4 mw7-l"
+      className="pointer dim pa2 ba mw4 mw6-m mw7-l"
       style={{ overflowWrap: "break-word" }}
       onClick={async () => {
         await navigator.clipboard.writeText(

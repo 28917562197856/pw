@@ -11,6 +11,7 @@ export const Import: React.FC = () => {
 
   return (
     <form
+      className="mt2"
       style={styles.container}
       onSubmit={e => {
         e.preventDefault();
@@ -33,12 +34,17 @@ export const Import: React.FC = () => {
       }}
     >
       <textarea
-        className={"w-20 h4"}
+        className={"w-60 w-40-m w-30-ns h4 mt4"}
         style={{ resize: "none" }}
         value={encryptedData}
         onChange={e => setEncryptedData(e.target.value)}
       />
-      <input autoFocus value={key} onChange={e => setKey(e.target.value)} />
+      <input
+        className="mv2"
+        autoFocus
+        value={key}
+        onChange={e => setKey(e.target.value)}
+      />
       <button type="submit">Import / Create</button>
     </form>
   );
