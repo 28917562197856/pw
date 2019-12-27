@@ -1,33 +1,31 @@
 import React, { useReducer, useEffect, useContext } from "react";
 import { State, Action } from "./AppTypes";
-import { lsSet, encrypt, download, keyFilter } from "./helpers";
-import { AddItem } from "./components/AddItem";
-import { GeneratePassword } from "./components/GeneratePassword";
-import { DataDisplay } from "./components/DataDisplay";
-import { Link, useHistory } from "react-router-dom";
+import {
+  lsSet,
+  encrypt,
+  download,
+  keyFilter,
+  generatePassword
+} from "./helpers";
+import { Create } from "./components/Create";
+import { DataTable } from "./components/DataTable";
+import { useHistory } from "react-router-dom";
 import { RouterContext } from "./Router";
 
 function reducer(state: State, action: Action) {
   switch (action.type) {
-    case "field": {
-      return {
-        ...state,
-        [action.name]: action.value
-      };
-    }
     case "create": {
+      let pw = generatePassword(action.length, action.symbols);
       let newData = {
         ...state.data,
-        [state.site]: [state.identifier, state.password]
+        [state.identifier]: pw
       };
       let encryptedData = encrypt(newData, state.key);
       lsSet(encryptedData);
       return {
         ...state,
         data: newData,
-        site: "",
-        identifier: "",
-        password: ""
+        identifier: ""
       };
     }
     case "delete": {
@@ -40,12 +38,10 @@ function reducer(state: State, action: Action) {
       };
     }
     case "import": {
-      let key = action.key;
-      let data = action.data;
       return {
         ...state,
-        data,
-        key
+        data: action.data,
+        key: action.key
       };
     }
     case "export": {
@@ -62,9 +58,7 @@ function reducer(state: State, action: Action) {
 const initialState = {
   data: {},
   key: "",
-  site: "",
-  identifier: "",
-  password: ""
+  identifier: ""
 };
 
 export const App: React.FC = () => {
@@ -72,15 +66,18 @@ export const App: React.FC = () => {
   const history = useHistory();
   const context = useContext(RouterContext);
 
-  const { data, site, identifier, password } = state;
+  const { data } = state;
 
-  useEffect(() => console.log(context), [context]);
   useEffect(() => {
     if (!context.key) {
-      history.push("/");
+      history.push("/import");
     } else {
       if (!Object.keys(context.data).length) {
-        dispatch({ type: "import", key: context.key });
+        dispatch({
+          type: "import",
+          data: { "example.com/myUsername": generatePassword(64) },
+          key: context.key
+        });
       } else {
         dispatch({
           type: "import",
@@ -93,21 +90,14 @@ export const App: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      <Link to="/">Import</Link>
-      <GeneratePassword dispatch={dispatch} />
-      <AddItem
-        dispatch={dispatch}
-        site={site}
-        identifier={identifier}
-        password={password}
-      />
-      <div>
-        {!data ? (
-          "No data available"
-        ) : (
-          <DataDisplay data={data} dispatch={dispatch} />
-        )}
+      <div className="mt2">
+        <button className="mr2" onClick={() => history.push("/import")}>
+          Import
+        </button>
+        <button onClick={() => dispatch({ type: "export" })}>Export</button>
       </div>
+      <Create dispatch={dispatch} data={data} />
+      <DataTable data={data ?? {}} dispatch={dispatch} />
     </div>
   );
 };

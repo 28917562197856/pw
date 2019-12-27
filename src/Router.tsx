@@ -8,12 +8,13 @@ export const RouterContext = React.createContext<any>({});
 export const Router: React.FC = () => {
   const [data, setData] = useState({});
   const [key, setKey] = useState("");
+
   return (
     <RouterContext.Provider value={{ data, key, setData, setKey }}>
       <BrowserRouter>
         <Switch>
-          <Route exact path="/" component={Import} />
-          <Route exact path="/show" component={App} />
+          <Route exact path="/import" component={Import} />
+          <Route exact path="/" component={App} />
           <Route path="/" render={() => <div>404</div>} />
         </Switch>
       </BrowserRouter>

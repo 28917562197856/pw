@@ -46,7 +46,7 @@ function download(text: string) {
   document.body.removeChild(element);
 }
 
-function generatePassword(length: number, symbols: boolean) {
+function generatePassword(length: number, symbols: boolean = false) {
   let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   if (symbols) chars += "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
@@ -58,9 +58,9 @@ function generatePassword(length: number, symbols: boolean) {
 function keyFilter(obj: object, key: string) {
   return Object.keys(obj)
     .filter(x => x !== key)
-    .reduce((obj, key) => {
+    .reduce((acc, key) => {
       return {
-        ...obj,
+        ...acc,
         [key]: obj[key]
       };
     }, {});
