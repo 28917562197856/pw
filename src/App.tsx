@@ -18,7 +18,7 @@ function reducer(state: State, action: Action) {
       let pw = generatePassword(action.length, action.symbols);
       let newData = {
         ...state.data,
-        [state.identifier]: pw
+        [action.identifier]: pw
       };
       let encryptedData = encrypt(newData, state.key);
       lsSet(encryptedData);
@@ -57,8 +57,7 @@ function reducer(state: State, action: Action) {
 
 const initialState = {
   data: {},
-  key: "",
-  identifier: ""
+  key: ""
 };
 
 export const App: React.FC = () => {

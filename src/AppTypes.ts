@@ -1,7 +1,6 @@
 type State = {
   data: Data;
   key: string;
-  identifier: string;
 };
 
 type Action =
