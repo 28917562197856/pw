@@ -11,7 +11,7 @@ export const Router: React.FC = () => {
 
   return (
     <RouterContext.Provider value={{ data, key, setData, setKey }}>
-      <BrowserRouter>
+      <BrowserRouter basename="/pw">
         <Switch>
           <Route exact path="/import" component={Import} />
           <Route exact path="/" component={App} />
