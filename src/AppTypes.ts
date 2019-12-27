@@ -1,14 +1,20 @@
-export type State = {
-  data: object;
+type State = {
+  data: Data;
   key: string;
   site: string;
   identifier: string;
   password: string;
 };
 
-export type Action =
+type Action =
   | { type: "field"; name: string; value: string }
   | { type: "create" }
-  | { type: "import"; data: object | null; key: string }
-  | { type: "init" }
+  | { type: "import"; data?: object; key: string }
+  | { type: "delete"; item: string }
   | { type: "export" };
+
+type Data = {
+  site: string[];
+};
+
+export { State, Action, Data };

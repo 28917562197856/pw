@@ -55,4 +55,23 @@ function generatePassword(length: number, symbols: boolean) {
     .join("");
 }
 
-export { lsGet, lsSet, encrypt, decrypt, download, generatePassword };
+function keyFilter(obj: object, key: string) {
+  return Object.keys(obj)
+    .filter(x => x !== key)
+    .reduce((obj, key) => {
+      return {
+        ...obj,
+        [key]: obj[key]
+      };
+    }, {});
+}
+
+export {
+  lsGet,
+  lsSet,
+  encrypt,
+  decrypt,
+  download,
+  generatePassword,
+  keyFilter
+};

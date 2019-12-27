@@ -1,50 +1,40 @@
-import React, { useState } from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { decrypt } from "../helpers";
+import React, { useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
+import { decrypt, lsGet } from "../helpers";
+import { RouterContext } from "../Router";
 
-type Props = {
-  encryptedData: string | null;
-};
-
-export const Import: React.FC<Props & RouteComponentProps> = ({
-  encryptedData,
-  history
-}) => {
-  const [data, setData] = useState(encryptedData ?? "");
+export const Import: React.FC = () => {
+  const [encryptedData, setEncryptedData] = useState(lsGet() ?? "");
   const [key, setKey] = useState("");
+  const history = useHistory();
+  const context = useContext(RouterContext);
 
   return (
     <div>
       <textarea
         className={"w5 h3"}
         style={{ resize: "none" }}
-        value={data}
-        onChange={e => setData(e.target.value)}
+        value={encryptedData}
+        onChange={e => setEncryptedData(e.target.value)}
       />
       <input value={key} onChange={e => setKey(e.target.value)} />
       <button
         onClick={() => {
-          if (!data && key) {
+          if (!encryptedData && key) {
             let choice = confirm(
               `Create new database with master password ${key}?`
             );
             if (choice) {
-              history.push({
-                pathname: "show",
-                state: { key }
-              });
+              history.push("show");
+              context.setKey(key);
             }
-          } else if (!decrypt(data, key)) {
+          } else if (!decrypt(encryptedData, key)) {
             alert("Invalid password!");
           } else {
-            setData("");
-            setKey("");
-            let decryptedData = decrypt(data, key);
-            console.log(decryptedData);
-            history.push({
-              pathname: "/show",
-              state: { data: decryptedData, key }
-            });
+            let decryptedData = decrypt(encryptedData, key);
+            context.setData(decryptedData);
+            context.setKey(key);
+            history.push("/show");
           }
         }}
       >

@@ -1,10 +1,11 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useContext } from "react";
 import { State, Action } from "./AppTypes";
-import { lsSet, encrypt, download } from "./helpers";
+import { lsSet, encrypt, download, keyFilter } from "./helpers";
 import { AddItem } from "./components/AddItem";
 import { GeneratePassword } from "./components/GeneratePassword";
 import { DataDisplay } from "./components/DataDisplay";
-import { RouteComponentProps, Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { RouterContext } from "./Router";
 
 function reducer(state: State, action: Action) {
   switch (action.type) {
@@ -29,15 +30,22 @@ function reducer(state: State, action: Action) {
         password: ""
       };
     }
+    case "delete": {
+      let newData = keyFilter(state.data, action.item);
+      let encryptedData = encrypt(newData, state.key);
+      lsSet(encryptedData);
+      return {
+        ...state,
+        data: newData
+      };
+    }
     case "import": {
       let key = action.key;
-
       let data = action.data;
       return {
         ...state,
         data,
-        key,
-        hidden: false
+        key
       };
     }
     case "export": {
@@ -59,21 +67,28 @@ const initialState = {
   password: ""
 };
 
-export const App: React.FC<RouteComponentProps> = ({ location, history }) => {
+export const App: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const history = useHistory();
+  const context = useContext(RouterContext);
 
   const { data, site, identifier, password } = state;
 
-  useEffect(() => console.log(state), [state]);
+  useEffect(() => console.log(context), [context]);
   useEffect(() => {
-    if (location.state === undefined) {
+    if (!context.key) {
       history.push("/");
-    } else
-      dispatch({
-        type: "import",
-        data: location.state.data ?? null,
-        key: location.state.key
-      });
+    } else {
+      if (!Object.keys(context.data).length) {
+        dispatch({ type: "import", key: context.key });
+      } else {
+        dispatch({
+          type: "import",
+          data: context.data,
+          key: context.key
+        });
+      }
+    }
   }, []);
 
   return (
@@ -86,7 +101,13 @@ export const App: React.FC<RouteComponentProps> = ({ location, history }) => {
         identifier={identifier}
         password={password}
       />
-      <div>{!data ? "No data available" : <DataDisplay data={data} />}</div>
+      <div>
+        {!data ? (
+          "No data available"
+        ) : (
+          <DataDisplay data={data} dispatch={dispatch} />
+        )}
+      </div>
     </div>
   );
 };

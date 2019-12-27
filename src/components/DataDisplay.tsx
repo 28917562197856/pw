@@ -1,10 +1,13 @@
 import React from "react";
+import { Action } from "src/AppTypes";
 
 type Props = {
   data: object;
+  dispatch: React.Dispatch<Action>;
 };
 
-export const DataDisplay: React.FC<Props> = ({ data }) => {
+export const DataDisplay: React.FC<Props> = ({ data, dispatch }) => {
+  //   console.log(data);
   return (
     <table>
       <thead>
@@ -21,7 +24,9 @@ export const DataDisplay: React.FC<Props> = ({ data }) => {
             <CopiableTd text={e[1][0]} className="mh1" />
             <CopiableTd text={e[1][1]} className="" />
             <td>
-              <button>Delete</button>
+              <button onClick={() => dispatch({ type: "delete", item: e[0] })}>
+                Delete
+              </button>
             </td>
           </tr>
         ))}
