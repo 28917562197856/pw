@@ -104,7 +104,6 @@ export const App: React.FC = () => {
 
 const styles = {
   container: {
-    fontFamily: "'Roboto', sans-serif",
     display: "grid",
     gridTemplateRows: "1fr",
     justifyItems: "center",
