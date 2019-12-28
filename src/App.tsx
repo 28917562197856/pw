@@ -12,7 +12,7 @@ import { DataTable } from "./components/DataTable";
 import { useHistory } from "react-router-dom";
 import { RouterContext } from "./Router";
 
-function reducer(state: State, action: Action) {
+function reducer(state: Readonly<State>, action: Action) {
   switch (action.type) {
     case "create": {
       let pw = generatePassword(action.length, action.symbols);

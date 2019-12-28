@@ -38,8 +38,7 @@ export const Create: React.FC<Props> = ({ dispatch, data }) => {
           className="ml1"
           onClick={() => {
             if (!identifier) alert("Fields must be nonempty!");
-            else if (Object.keys(data).includes(identifier))
-              alert("Field already exists!");
+            else if (identifier in data) alert("Field already exists!");
             else dispatch({ type: "create", identifier, length, symbols });
           }}
         >

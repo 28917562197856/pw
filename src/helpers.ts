@@ -36,7 +36,7 @@ function download(text: string) {
     "href",
     "data:text/plain;charset=utf-8," + encodeURIComponent(text)
   );
-  element.setAttribute("download", "data.txt");
+  element.setAttribute("download", `${(Date.now() / 1000) << 0}-data.txt`);
 
   element.style.display = "none";
   document.body.appendChild(element);

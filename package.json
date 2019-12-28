@@ -19,6 +19,6 @@
   },
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "parcel build src/index.html --no-source-maps && echo \"/* /index.html 200\" > dist/_redirects"
+    "build": "rm -rf dist/ && parcel build src/index.html --no-source-maps && echo \"/* /index.html 200\" > dist/_redirects"
   }
 }
