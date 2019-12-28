@@ -34,7 +34,7 @@ export const Import: React.FC = () => {
       }}
     >
       <textarea
-        className={"w-60 w-40-m w-30-ns h4 mt4"}
+        className="w-60 w-50-m w-40-ns h5 mt4"
         style={{ resize: "none" }}
         value={encryptedData}
         onChange={e => setEncryptedData(e.target.value)}

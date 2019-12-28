@@ -1,5 +1,5 @@
 import React from "react";
-import { Action } from "../AppTypes";
+import { Action } from "../App";
 
 type Props = {
   data: object;
