@@ -22,6 +22,7 @@ export const DataTable: React.FC<Props> = ({ data, dispatch }) => {
             <CopiableTd text={e[1]} />
             <td>
               <button
+                className="bn pa1 f5 bg-light-gray hover-bg-moon-gray"
                 onClick={() => {
                   dispatch({ type: "delete", item: e[0] });
                 }}

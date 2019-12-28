@@ -1,5 +1,4 @@
 import React, { useReducer, useEffect, useContext } from "react";
-import { State, Action } from "./AppTypes";
 import {
   lsSet,
   encrypt,
@@ -11,6 +10,17 @@ import { Create } from "./components/Create";
 import { DataTable } from "./components/DataTable";
 import { useHistory } from "react-router-dom";
 import { RouterContext } from "./Router";
+
+type State = {
+  data: object;
+  key: string;
+};
+
+export type Action =
+  | { type: "create"; identifier: string; length: number; symbols: boolean }
+  | { type: "import"; data: object; key: string }
+  | { type: "delete"; item: string }
+  | { type: "export" };
 
 function reducer(state: Readonly<State>, action: Action) {
   switch (action.type) {
@@ -24,8 +34,7 @@ function reducer(state: Readonly<State>, action: Action) {
       lsSet(encryptedData);
       return {
         ...state,
-        data: newData,
-        identifier: ""
+        data: newData
       };
     }
     case "delete": {
@@ -90,10 +99,20 @@ export const App: React.FC = () => {
   return (
     <div style={styles.container}>
       <div className="mt2">
-        <button className="mr2" onClick={() => history.push("/import")}>
+        <button
+          style={{ padding: ".40rem" }}
+          className="mr2 bn bg-light-gray hover-bg-moon-gray"
+          onClick={() => history.push("/import")}
+        >
           Import
         </button>
-        <button onClick={() => dispatch({ type: "export" })}>Export</button>
+        <button
+          style={{ padding: ".40rem" }}
+          className="bn bg-light-gray hover-bg-moon-gray"
+          onClick={() => dispatch({ type: "export" })}
+        >
+          Export
+        </button>
       </div>
       <Create dispatch={dispatch} data={data} />
       <DataTable data={data ?? {}} dispatch={dispatch} />

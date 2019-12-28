@@ -45,7 +45,9 @@ export const Import: React.FC = () => {
         value={key}
         onChange={e => setKey(e.target.value)}
       />
-      <button type="submit">Import / Create</button>
+      <button className="bn pa2 bg-light-gray hover-bg-moon-gray" type="submit">
+        Import / Create
+      </button>
     </form>
   );
 };

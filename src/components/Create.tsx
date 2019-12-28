@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Action } from "../AppTypes";
+import { Action } from "../App";
 
 type Props = {
   dispatch: React.Dispatch<Action>;
@@ -12,14 +12,18 @@ export const Create: React.FC<Props> = ({ dispatch, data }) => {
   const [length, setLength] = useState<any>(64);
   return (
     <div style={styles.container} className="mb2">
-      <div className="mv2" style={styles.container}>
-        <div>
+      <div style={styles.container}>
+        <div className="flex items-center mt2">
           <span className="mr2">Symbols?</span>
-          <input type="checkbox" onChange={() => setSymbols(!symbols)} />
+          <input
+            className="pointer"
+            type="checkbox"
+            onChange={() => setSymbols(!symbols)}
+          />
         </div>
-        <span className="mh2">Password length ({length})</span>
+        <span className="mt2">Password length ({length})</span>
         <input
-          className="w5"
+          className="w5 mt2"
           min={1}
           max={128}
           type="range"
@@ -29,22 +33,27 @@ export const Create: React.FC<Props> = ({ dispatch, data }) => {
           }}
         />
       </div>
-      <div>
+      <form
+        className="mt2"
+        onSubmit={e => {
+          e.preventDefault();
+          if (!identifier) alert("Fields must be nonempty!");
+          else if (identifier in data) alert("Field already exists!");
+          else dispatch({ type: "create", identifier, length, symbols });
+        }}
+      >
         <input
+          style={{ height: "20px" }}
           value={identifier}
           onChange={e => setIdentifier(e.target.value)}
         />
         <button
-          className="ml1"
-          onClick={() => {
-            if (!identifier) alert("Fields must be nonempty!");
-            else if (identifier in data) alert("Field already exists!");
-            else dispatch({ type: "create", identifier, length, symbols });
-          }}
+          className="ml1 bn pa1 h-100 bg-light-gray hover-bg-moon-gray"
+          type="submit"
         >
           Add item
         </button>
-      </div>
+      </form>
     </div>
   );
 };
