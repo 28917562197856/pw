@@ -40,7 +40,7 @@ export const DataTable: React.FC<Props> = ({ data, dispatch }) => {
 const CopiableTd: React.FC<{ text: string }> = ({ text }) => {
   return (
     <td
-      className="pointer dim pa2 ba mw4 mw6-m mw7-l"
+      className="pointer dim pa2 ba mw4 mw5-m mw7-l"
       style={{ overflowWrap: "break-word" }}
       onClick={async () => {
         await navigator.clipboard.writeText(
