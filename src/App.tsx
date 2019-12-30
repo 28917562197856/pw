@@ -97,7 +97,7 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div style={styles.container}>
+    <div className="flex flex-column items-center">
       <div className="mt2">
         <button
           style={{ padding: ".40rem" }}
@@ -118,13 +118,4 @@ export const App: React.FC = () => {
       <DataTable data={data ?? {}} dispatch={dispatch} />
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "grid",
-    gridTemplateRows: "1fr",
-    justifyItems: "center",
-    alignItems: "center"
-  }
 };

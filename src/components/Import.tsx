@@ -11,11 +11,14 @@ export const Import: React.FC = () => {
 
   return (
     <form
-      className="mt2"
-      style={styles.container}
+      className="mt2 flex flex-column items-center"
       onSubmit={e => {
         e.preventDefault();
-        if (!encryptedData && key) {
+        if (!encryptedData && !key) {
+          alert(
+            "Fields must be nonempty!\nFor creating a new database enter only the master password."
+          );
+        } else if (!encryptedData && key) {
           let choice = confirm(
             `Create new database with master password "${key}"?`
           );
@@ -40,7 +43,8 @@ export const Import: React.FC = () => {
         onChange={e => setEncryptedData(e.target.value)}
       />
       <input
-        className="mv2"
+        placeholder="Master password"
+        className="mv2 tc"
         autoFocus
         value={key}
         onChange={e => setKey(e.target.value)}
@@ -50,13 +54,4 @@ export const Import: React.FC = () => {
       </button>
     </form>
   );
-};
-
-const styles = {
-  container: {
-    display: "grid",
-    gridTemplateRows: "1fr",
-    justifyItems: "center",
-    alignItems: "center"
-  }
 };

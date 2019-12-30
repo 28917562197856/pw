@@ -37,11 +37,7 @@ export const DataTable: React.FC<Props> = ({ data, dispatch }) => {
   );
 };
 
-type PropsCopiableDiv = {
-  text: string;
-};
-
-const CopiableTd: React.FC<PropsCopiableDiv> = ({ text }) => {
+const CopiableTd: React.FC<{ text: string }> = ({ text }) => {
   return (
     <td
       className="pointer dim pa2 ba mw4 mw6-m mw7-l"

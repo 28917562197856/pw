@@ -10,29 +10,28 @@ export const Create: React.FC<Props> = ({ dispatch, data }) => {
   const [identifier, setIdentifier] = useState("");
   const [symbols, setSymbols] = useState(false);
   const [length, setLength] = useState<any>(64);
+
   return (
-    <div style={styles.container} className="mb2">
-      <div style={styles.container}>
-        <div className="flex items-center mt2">
-          <span className="mr2">Symbols?</span>
-          <input
-            className="pointer"
-            type="checkbox"
-            onChange={() => setSymbols(!symbols)}
-          />
-        </div>
-        <span className="mt2">Password length ({length})</span>
+    <div className="mb2 flex flex-column items-center">
+      <div className="flex items-center mt2">
+        <span className="mr2">Symbols?</span>
         <input
-          className="w5 mt2"
-          min={1}
-          max={128}
-          type="range"
-          onChange={e => {
-            let len = parseInt(e.target.value);
-            setLength(len);
-          }}
+          className="pointer"
+          type="checkbox"
+          onChange={() => setSymbols(!symbols)}
         />
       </div>
+      <span className="mt2">Password length ({length})</span>
+      <input
+        className="w5 mt2"
+        min={1}
+        max={128}
+        type="range"
+        onChange={e => {
+          let len = parseInt(e.target.value);
+          setLength(len);
+        }}
+      />
       <form
         className="mt2"
         onSubmit={e => {
@@ -43,6 +42,7 @@ export const Create: React.FC<Props> = ({ dispatch, data }) => {
         }}
       >
         <input
+          placeholder="Identifier"
           style={{ height: "20px" }}
           value={identifier}
           onChange={e => setIdentifier(e.target.value)}
@@ -56,13 +56,4 @@ export const Create: React.FC<Props> = ({ dispatch, data }) => {
       </form>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "grid",
-    gridTemplateRows: "1fr",
-    justifyItems: "center",
-    alignItems: "center"
-  }
 };
