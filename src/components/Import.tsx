@@ -1,13 +1,14 @@
-import React, { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { decrypt, lsGet } from "../helpers";
-import { RouterContext } from "../Router";
+import React, { useState } from "react";
+import { decrypt, lsGet, generatePassword } from "../helpers";
+import { Action } from "src/App";
 
-export const Import: React.FC = () => {
+type Props = {
+  dispatch: React.Dispatch<Action>;
+};
+
+export const Import: React.FC<Props> = ({ dispatch }) => {
   const [encryptedData, setEncryptedData] = useState(lsGet() ?? "");
   const [key, setKey] = useState("");
-  const history = useHistory();
-  const context = useContext(RouterContext);
 
   return (
     <form
@@ -23,16 +24,23 @@ export const Import: React.FC = () => {
             `Create new database with master password "${key}"?`
           );
           if (choice) {
-            history.push("/");
-            context.setKey(key);
+            dispatch({
+              type: "import",
+              data: { "example.com/myUsername": generatePassword(64) },
+              key
+            });
+            setKey("");
           }
         } else if (!decrypt(encryptedData, key)) {
           alert("Invalid password!");
         } else {
           let decryptedData = decrypt(encryptedData, key);
-          context.setData(decryptedData);
-          context.setKey(key);
-          history.push("/");
+          dispatch({
+            type: "import",
+            data: decryptedData!,
+            key
+          });
+          setKey("");
         }
       }}
     >

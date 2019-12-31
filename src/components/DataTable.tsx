@@ -2,11 +2,11 @@ import React from "react";
 import { Action } from "../App";
 
 type Props = {
-  data: object;
   dispatch: React.Dispatch<Action>;
+  data: object;
 };
 
-export const DataTable: React.FC<Props> = ({ data, dispatch }) => {
+export const DataTable: React.FC<Props> = ({ dispatch, data }) => {
   return (
     <table className="mt1">
       <thead>
