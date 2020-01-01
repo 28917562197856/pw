@@ -46,12 +46,16 @@ function download(text: string) {
   document.body.removeChild(element);
 }
 
+function random() {
+  return window.crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296;
+}
+
 function generatePassword(length: number, symbols: boolean = false) {
   let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   if (symbols) chars += "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
   return [...Array(length).keys()]
-    .map(_ => chars[(Math.random() * chars.length) << 0])
+    .map(_ => chars[(random() * chars.length) << 0])
     .join("");
 }
 
